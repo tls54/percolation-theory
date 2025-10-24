@@ -1,0 +1,6 @@
+build/
+__pycache__
+testing.ipynb
+cpp_vs_jit.py
+TODO.txt
+*.so
