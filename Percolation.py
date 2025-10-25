@@ -1,9 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
-from Search import find_clusters_union_find_numba_fast, find_clusters_bfs
-from profiling import ProfilerConfig, profile_context
 from time import perf_counter
+
+from Search import find_clusters_union_find_numba_fast, find_clusters_bfs, find_clusters_cpp
+from pc_estimation import analyze_simulation_results
+from profiling import ProfilerConfig, profile_context
+
 
 
 
@@ -87,12 +89,12 @@ def run_percolation_trials(p, N, num_trials, search_algo, verbose=False):
 
 if __name__ == '__main__':
     # ============= CONFIGURATION =============
-    N = 200  # Grid size
-    num_trials = 100  # Number of realizations per p value
-    p_values = np.linspace(0.58, 0.6, 51)  # Fine-grained p values
+    N = 250  # Grid size
+    num_trials = 200  # Number of realizations per p value
+    p_values = np.linspace(0.4, 0.8, 101)  # Fine-grained p values
     verbose = False 
     updates = 10 
-    search_algo = find_clusters_bfs
+    search_algo = find_clusters_cpp
 
     # Profiling configuration (ONLY CHANGE THIS)
     profiler_config = ProfilerConfig(
@@ -141,22 +143,41 @@ if __name__ == '__main__':
     print('Simulation complete!')
     print(f'Total Run Time: {end - start:.3f}')
 
-    # Create plots
+    # ============= P_C ESTIMATION =============
+    pc_results = analyze_simulation_results(
+        p_values=np.array(p_values),
+        percolation_probs=np.array(prob_p),
+        N=N,
+        num_trials=num_trials,
+        verbose=True
+    )
+    # ==============================================
+
+    # Create plots (your existing plotting code)
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    
+
     # Plot 1: Percolation Probability P(p)
-    axes[0].plot(p_values, prob_p, 'o-', linewidth=2, markersize=6, color='steelblue')
+    axes[0].plot(p_values, prob_p, 'o-', linewidth=2, markersize=3, color='steelblue', label='Simulation')
+
+    # Add fitted curve if available
+    if pc_results['fit_info'] is not None:
+        axes[0].plot(p_values, pc_results['fit_info']['fitted_curve'], '--', 
+                    linewidth=2, color='orange', alpha=0.7, label='Sigmoid fit')
+        # Mark estimated p_c
+        axes[0].axvline(x=pc_results['pc_estimate'], color='orange', linestyle='--', 
+                    alpha=0.7, label=f'Fitted p_c = {pc_results["pc_estimate"]:.4f}')
+
     axes[0].axhline(y=0.5, color='red', linestyle='--', alpha=0.5, label='P(p) = 0.5')
-    axes[0].axvline(x=0.5927, color='green', linestyle='--', alpha=0.5, label='p_c ≈ 0.593')
+    axes[0].axvline(x=0.5927, color='green', linestyle='--', alpha=0.5, label='Theoretical p_c')
     axes[0].set_xlabel('Occupation Probability (p)', fontsize=12)
     axes[0].set_ylabel('Percolation Probability P(p)', fontsize=12)
     axes[0].set_title('Percolation Transition', fontsize=14, fontweight='bold')
     axes[0].grid(True, alpha=0.3)
-    axes[0].legend()
+    axes[0].legend(fontsize=8)
     axes[0].set_ylim(-0.05, 1.05)
     
     # Plot 2: Mean Number of Clusters
-    axes[1].plot(p_values, num_clusters, 'o-', linewidth=2, markersize=6, color='coral')
+    axes[1].plot(p_values, num_clusters, 'o-', linewidth=2, markersize=3, color='coral')
     axes[1].axvline(x=0.5927, color='green', linestyle='--', alpha=0.5, label='p_c ≈ 0.593')
     axes[1].set_xlabel('Occupation Probability (p)', fontsize=12)
     axes[1].set_ylabel('Mean Number of Clusters', fontsize=12)
@@ -165,7 +186,7 @@ if __name__ == '__main__':
     axes[1].legend()
     
     # Plot 3: Mean Cluster Size
-    axes[2].plot(p_values, mean_sizes, 'o-', linewidth=2, markersize=6, color='mediumseagreen')
+    axes[2].plot(p_values, mean_sizes, 'o-', linewidth=2, markersize=3, color='mediumseagreen')
     axes[2].axvline(x=0.5927, color='green', linestyle='--', alpha=0.5, label='p_c ≈ 0.593')
     axes[2].set_xlabel('Occupation Probability (p)', fontsize=12)
     axes[2].set_ylabel('Mean Cluster Size', fontsize=12)
