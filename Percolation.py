@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from time import perf_counter
 
 from Search import find_clusters_union_find_numba_fast, find_clusters_bfs, find_clusters_cpp
-from pc_estimation import analyze_simulation_results
+from Estimation import analyze_simulation_results
 from profiling import ProfilerConfig, profile_context
 
 

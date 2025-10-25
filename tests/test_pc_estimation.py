@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from pc_estimation import sigmoid, estimate_pc, analyze_simulation_results
+from Estimation import sigmoid, estimate_pc, analyze_simulation_results
 
 
 
@@ -10,7 +10,7 @@ class TestSigmoid:
         '''Sigmoid should be 0.5 at p_c.'''
         pc = 0.6
         width = 0.05
-        result = sigmoid(np.ndarray([pc]), pc, width)
+        result = sigmoid(np.array([pc]), pc, width)
         
         assert np.isclose(result[0], 0.5), "Sigmoid should be 0.5 at p_c"
 
@@ -66,12 +66,15 @@ class TestPcEstimation:
 
     def test_insufficient_data(self):
         """Should fail gracefully with insufficient data."""
+        import warnings
+        
         p_values = np.array([0.5, 0.6])
         percolation_probs = np.array([0.2, 0.8])
         
-        pc, stderr, fit_info = estimate_pc(p_values, percolation_probs)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")  # Suppress expected warning
+            pc, stderr, fit_info = estimate_pc(p_values, percolation_probs)
         
-        # May succeed with just 2 points, but won't be reliable
         # Main thing is it shouldn't crash
         assert True, "Should not crash on minimal data"
 
