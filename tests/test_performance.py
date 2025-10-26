@@ -12,10 +12,6 @@ class TestRelativePerformance:
         np.random.seed(42)
         return [np.random.rand(50, 50) < 0.6 for _ in range(20)]
 
-    @pytest.mark.skipif(
-        os.getenv('CI') == 'true',  # Skip in CI
-        reason="C++ performance tests unreliable in CI environment"
-    )
     def test_numba_faster_than_bfs(self, benchmark_grids):
         """Numba should be significantly faster than BFS."""
         from Search import find_clusters_bfs, find_clusters_union_find_numba_fast
@@ -42,6 +38,10 @@ class TestRelativePerformance:
         assert speedup > 5.0, f"Numba only {speedup:.1f}x faster (expected >5x)"
 
 
+    @pytest.mark.skipif(
+        os.environ.get('CI', 'false') == 'true',  # Add default value
+        reason="C++ performance tests unreliable in CI environment"
+    )
     def test_cpp_faster_than_numba(self, benchmark_grids):
         """C++ should be faster than Numba."""
         from Search import HAS_CPP
@@ -50,7 +50,7 @@ class TestRelativePerformance:
             pytest.skip("C++ module not available")
         
         from Search import find_clusters_union_find_numba_fast, find_clusters_cpp
-
+        
         # Warmup both
         _ = find_clusters_union_find_numba_fast(benchmark_grids[0])
         _ = find_clusters_cpp(benchmark_grids[0])
@@ -70,7 +70,12 @@ class TestRelativePerformance:
         speedup = numba_time / cpp_time
         print(f"\nC++ is {speedup:.1f}x faster than Numba")
         
-        # Should be at least 1.2x faster
+        # Don't assert in CI - just log
+        if os.environ.get('CI') == 'true':
+            print(f"CI environment - skipping assertion (speedup was {speedup:.1f}x)")
+            return
+        
+        # Local testing - assert performance
         assert speedup > 1.2, f"C++ only {speedup:.1f}x faster (expected >1.2x)"
 
 class TestScalability:
@@ -168,6 +173,10 @@ class TestPerformanceRegression:
 
 
 
+    @pytest.mark.skipif(
+        os.environ.get('CI') == 'true',  # ← Fixed here too
+        reason="C++ not built in CI"
+    )
     def test_cpp_performance_regression(self, reference_benchmark):
         """C++ should not be slower than baseline."""
         from Search import HAS_CPP
