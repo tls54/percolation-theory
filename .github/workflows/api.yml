@@ -1,0 +1,48 @@
+name: API Tests
+
+on:
+  push:
+    paths:
+      - 'api/'
+      - 'tests_api/'
+      - 'requirements.txt'
+  pull_request:
+    paths:
+      - 'api/'
+      - 'tests_api/'
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Run API tests
+        run: |
+          pytest tests_api/ -v --cov=api --cov-report=term
+
+      - name: Test API startup
+        run: |
+          # Start API in background
+          uvicorn api.main:app --host 0.0.0.0 --port 8000 &
+          API_PID=$!
+
+          # Wait for API to start
+          sleep 5
+
+          # Test health endpoint
+          curl -f http://localhost:8000/health || exit 1
+
+          # Cleanup
+          kill $API_PID

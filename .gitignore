@@ -15,6 +15,8 @@ test_viz.py
 .pytest_cache/
 .coverage
 htmlcov/
+coverage.xml
+.coverage.*
 
 # IDE
 .vscode/
