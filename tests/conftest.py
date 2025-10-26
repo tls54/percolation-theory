@@ -17,6 +17,7 @@ def algorithms():
     from Search import (
         find_clusters_bfs,
         find_clusters_union_find_numba_fast,
+        HAS_CPP  # Add this
     )
     
     algos = {
@@ -24,11 +25,9 @@ def algorithms():
         'Numba': find_clusters_union_find_numba_fast,
     }
     
-    # Try to add C++ if available
-    try:
+    # Only add C++ if actually available
+    if HAS_CPP:
         from Search import find_clusters_cpp
         algos['C++'] = find_clusters_cpp
-    except ImportError:
-        pass
     
     return algos

@@ -1,6 +1,7 @@
 """API configuration."""
 
 from pydantic_settings import BaseSettings
+from typing import List
 
 
 class Settings(BaseSettings):
@@ -12,7 +13,7 @@ class Settings(BaseSettings):
     api_description: str = "High-performance percolation simulation API"
     
     # CORS settings
-    cors_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]  # React dev servers
+    cors_origins: List[str] = ["http://localhost:3000", "http://localhost:5173"]  # React dev servers
     
     # Simulation defaults
     default_N: int = 50

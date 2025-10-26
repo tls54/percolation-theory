@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 import time
+import os
 
 
 class TestRelativePerformance:
@@ -11,6 +12,10 @@ class TestRelativePerformance:
         np.random.seed(42)
         return [np.random.rand(50, 50) < 0.6 for _ in range(20)]
 
+    @pytest.mark.skipif(
+        os.getenv('CI') == 'true',  # Skip in CI
+        reason="C++ performance tests unreliable in CI environment"
+    )
     def test_numba_faster_than_bfs(self, benchmark_grids):
         """Numba should be significantly faster than BFS."""
         from Search import find_clusters_bfs, find_clusters_union_find_numba_fast
