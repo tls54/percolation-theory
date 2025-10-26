@@ -3,4 +3,6 @@ __pycache__
 testing.ipynb
 cpp_vs_jit.py
 TODO.txt
+test_viz.py
+*.png
 *.so
