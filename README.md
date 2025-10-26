@@ -319,7 +319,7 @@ Run parameter sweep across multiple p values
 ## Requirements
 
 **Minimum (BFS only)**
-- Python 3.8+
+- Python 3.9+
 - NumPy 1.20+
 - Matplotlib 3.3+
 

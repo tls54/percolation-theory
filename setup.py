@@ -65,5 +65,5 @@ setup(
     ext_modules=ext_modules,
     cmdclass={'build_ext': BuildExtInPlace},
     zip_safe=False,
-    python_requires='>=3.7',
+    python_requires='>=3.9',
 )
