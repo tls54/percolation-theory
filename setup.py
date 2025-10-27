@@ -1,60 +1,53 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
-import os
-import pybind11
+import shutil
+from pathlib import Path
 
-class get_pybind_include:
-    def __str__(self):
-        return pybind11.get_include()
 
-class BuildExtInPlace(build_ext):
-    """Build extension directly in the Search/ folder"""
-    def build_extension(self, ext):
-        # Build normally first
-        build_ext.build_extension(self, ext)
+class BuildExtWithCopy(build_ext):
+    """Custom build_ext that copies .so files to Search/ directory."""
+    
+    def run(self):
+        # Run the normal build
+        build_ext.run(self)
         
-        # Move to Search/ folder
-        build_lib = self.build_lib
+        # Copy the built extension to Search/
+        if self.extensions:
+            for ext in self.extensions:
+                self.copy_extension_to_source(ext)
+    
+    def copy_extension_to_source(self, ext):
+        """Copy built extension from build dir to source dir."""
+        build_py = self.get_finalized_command('build_py')
+        package_dir = Path('Search')
+        
+        # Get the built extension path
         fullname = self.get_ext_fullname(ext.name)
-        modpath = fullname.split('.')
         filename = self.get_ext_filename(fullname)
         
-        # Source location (default build)
-        src = os.path.join(build_lib, filename)
-        if not os.path.exists(src):
-            # If --inplace, it's in project root
-            src = self.get_ext_fullpath(ext.name)
+        # Source: build/lib.../filename
+        src = Path(self.build_lib) / filename
         
-        # Destination in Search/
-        dest = os.path.join('Search', os.path.basename(filename))
+        # Destination: Search/filename
+        dest = package_dir / Path(filename).name
         
-        # Move (not copy) to Search/
-        if os.path.exists(src) and src != dest:
-            os.makedirs('Search', exist_ok=True)
-            if os.path.exists(dest):
-                os.remove(dest)
-            os.rename(src, dest)
-            print(f"Moved {src} -> {dest}")
+        if src.exists():
+            print(f"Copying {src} -> {dest}")
+            shutil.copy2(src, dest)
+        else:
+            print(f"Warning: Built extension not found at {src}")
 
-# Compiler args based on platform
-extra_compile_args = ['-std=c++17', '-O3']
-extra_link_args = []
-
-if sys.platform == 'darwin':  # macOSpython 
-    extra_link_args = ['-undefined', 'dynamic_lookup']
 
 ext_modules = [
     Extension(
         'percolation_cpp',
         ['cpp/src/bindings.cpp'],
         include_dirs=[
-            get_pybind_include(),
             'cpp/src',
         ],
         language='c++',
-        extra_compile_args=extra_compile_args,
-        extra_link_args=extra_link_args,
+        extra_compile_args=['-std=c++17', '-O3'],
     ),
 ]
 
@@ -63,7 +56,7 @@ setup(
     version='0.1.0',
     description='Fast C++ percolation algorithms',
     ext_modules=ext_modules,
-    cmdclass={'build_ext': BuildExtInPlace},
+    cmdclass={'build_ext': BuildExtWithCopy},
     zip_safe=False,
     python_requires='>=3.9',
 )
