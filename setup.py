@@ -3,6 +3,7 @@ from setuptools.command.build_ext import build_ext
 import sys
 import shutil
 from pathlib import Path
+import pybind11  # Add this import
 
 
 class BuildExtWithCopy(build_ext):
@@ -44,6 +45,7 @@ ext_modules = [
         'percolation_cpp',
         ['cpp/src/bindings.cpp'],
         include_dirs=[
+            pybind11.get_include(),  # ← ADD THIS
             'cpp/src',
         ],
         language='c++',
