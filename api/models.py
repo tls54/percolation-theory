@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, Literal
+from typing import Optional, Literal, Tuple
 
 
 class SimulationRequest(BaseModel):
@@ -78,3 +78,18 @@ class HealthResponse(BaseModel):
     version: str
     cpp_available: bool
     numba_available: bool
+
+class VisualizationRequest(BaseModel):
+    """Request model for grid visualization."""
+    
+    p: float = Field(..., ge=0.0, le=1.0, description="Occupation probability")
+    N: int = Field(50, ge=10, le=500, description="Grid size (N×N)")
+    algorithm: Literal["bfs", "numba", "cpp"] = Field("numba", description="Search algorithm")
+    seed: Optional[int] = Field(None, description="Random seed for reproducibility")
+    
+    # Visualization options (optional with smart defaults)
+    min_cluster_size: Optional[int] = Field(None, description="Minimum cluster size to color (null=auto)")
+    colormap: str = Field("tab20", description="Matplotlib colormap name")
+    highlight_spanning: bool = Field(True, description="Highlight spanning clusters")
+    image_size: Tuple[int, int] = Field((800, 800), description="Image size in pixels")
+    show_grid: bool = Field(False, description="Show grid lines (small N only)")
