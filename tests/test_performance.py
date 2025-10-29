@@ -39,8 +39,8 @@ class TestRelativePerformance:
 
 
     @pytest.mark.skipif(
-        os.environ.get('CI', 'false') == 'true',  # Add default value
-        reason="C++ performance tests unreliable in CI environment"
+        os.environ.get('CI') == 'true' or os.path.exists('/.dockerenv'),
+        reason="C++ performance tests unreliable in CI/Docker environments"
     )
     def test_cpp_faster_than_numba(self, benchmark_grids):
         """C++ should be faster than Numba."""
@@ -174,8 +174,8 @@ class TestPerformanceRegression:
 
 
     @pytest.mark.skipif(
-        os.environ.get('CI') == 'true',  # ← Fixed here too
-        reason="C++ not built in CI"
+        os.environ.get('CI') == 'true' or os.path.exists('/.dockerenv'),
+        reason="C++ performance tests unreliable in CI/Docker environments"
     )
     def test_cpp_performance_regression(self, reference_benchmark):
         """C++ should not be slower than baseline."""

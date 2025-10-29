@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: percolation-api
+    ports:
+      - "8000:8000"
+    environment:
+      - API_TITLE=Percolation Theory API
+      - API_VERSION=0.1.0
+      - DEFAULT_N=50
+      - DEFAULT_NUM_TRIALS=100
+      - MAX_N=500
+      - MAX_TRIALS=1000
+      - USE_CPP=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
