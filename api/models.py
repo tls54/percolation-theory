@@ -5,7 +5,7 @@ from typing import Optional, Literal, Tuple
 class SimulationRequest(BaseModel):
     """Request model for single-point simulation."""
     
-    p: float = Field(..., ge=0.0, le=1.0, description="Occupation probability")
+    p: float = Field(0.7, ge=0.0, le=1.0, description="Occupation probability")
     N: int = Field(50, ge=10, le=500, description="Grid size (N×N)")
     num_trials: int = Field(100, ge=1, le=1000, description="Number of trials")
     algorithm: Literal["bfs", "numba", "cpp"] = Field(
@@ -91,5 +91,5 @@ class VisualizationRequest(BaseModel):
     min_cluster_size: Optional[int] = Field(None, description="Minimum cluster size to color (null=auto)")
     colormap: str = Field("tab20", description="Matplotlib colormap name")
     highlight_spanning: bool = Field(True, description="Highlight spanning clusters")
-    image_size: Tuple[int, int] = Field((800, 800), description="Image size in pixels")
+    image_size: list[int] = Field([800, 800], description="Image size in pixels [width, height]")
     show_grid: bool = Field(False, description="Show grid lines (small N only)")

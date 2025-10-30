@@ -1,17 +1,14 @@
-"""FastAPI application entry point."""
+"""Main FastAPI application."""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.config import settings
-from api.routes import health, simulation
+from api.routes import health, simulation, visualization  
 
-# Create FastAPI app
 app = FastAPI(
     title=settings.api_title,
     version=settings.api_version,
     description=settings.api_description,
-    docs_url="/docs",
-    redoc_url="/redoc"
 )
 
 # CORS middleware
@@ -24,16 +21,17 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(health.router, tags=["health"])
-app.include_router(simulation.router, prefix="/api", tags=["simulation"])
+app.include_router(health.router, prefix="/api")
+app.include_router(simulation.router, prefix="/api")
+app.include_router(visualization.router, prefix="/api") 
 
 
 @app.get("/")
 async def root():
     """Root endpoint with API information."""
     return {
-        "name": settings.api_title,
+        "message": "Percolation Theory API",
         "version": settings.api_version,
         "docs": "/docs",
-        "health": "/health"
+        "health": "/api/health"
     }

@@ -1,0 +1,36 @@
+# Documentation Structure for Percolation Theory Project
+
+Goal: modular, layered documentation that separates user guidance, developer info, and algorithmic theory.
+
+1. Root README.md
+   - High-level project overview.
+   - Quick start guide (install, run API, visualize).
+   - Feature summary and links to deeper docs.
+
+2. api/README.md
+   - REST API reference for FastAPI endpoints.
+   - Example requests (curl, Python requests).
+   - Usage, troubleshooting, and OpenAPI docs link.
+
+3. Search/README.md
+   - Algorithm layer (BFS, Union-Find, C++).
+   - Build instructions for C++ backend.
+   - Benchmark and optimization notes.
+
+4. visualization/README.md
+   - Description of rendering options and visualization parameters.
+   - Example outputs and reproducibility notes.
+
+5. docs/
+   - usage.md: full walkthrough from setup → simulation → visualization.
+   - development.md: local dev setup, tests, and profiling.
+   - algorithms.md: deep dive into percolation models and code logic.
+   - theory.md: background on percolation theory and critical probability.
+   - troubleshooting.md: common issues, environment quirks.
+
+6. Optional READMEs:
+   - cpp/README.md for C++ build & linking.
+   - tests/README.md for test structure and commands.
+
+Tone: concise, technically clear, developer-oriented.
+Style: Markdown, minimal prose, section headers, and examples where relevant.

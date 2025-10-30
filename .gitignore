@@ -30,3 +30,7 @@ Thumbs.db
 # Test artifacts
 Test_and_benchmark.py
 plumbing.md
+
+# Claude
+.claude/
+
