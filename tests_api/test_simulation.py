@@ -1,4 +1,5 @@
 import pytest
+from httpx import AsyncClient
 
 
 class TestSimulationEndpoint:
@@ -144,15 +145,21 @@ class TestSimulateValidation:
         })
         assert response.status_code == 422
 
-    def test_simulate_missing_required_field(self, client):
-        """Should reject request missing required field."""
-        response = client.post("/api/simulate", json={
-            "N": 50,
-            "num_trials": 100,
-            "algorithm": "numba"
-            # Missing "p"
-        })
+    @pytest.mark.asyncio
+    async def test_simulate_missing_required_field(self, client: AsyncClient):
+        """Missing required field should return 422."""
+        # p is required and has no default - should fail without it
+        response = await client.post(
+            "/api/simulate",
+            json={
+                "N": 50,
+                "num_trials": 100
+                # Missing 'p' - required field
+            }
+        )
         assert response.status_code == 422
+        data = response.json()
+        assert "detail" in data
 
 
 class TestParameterSweepEndpoint:
