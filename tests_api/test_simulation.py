@@ -1,5 +1,5 @@
 import pytest
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 
 
 class TestSimulationEndpoint:
@@ -145,11 +145,9 @@ class TestSimulateValidation:
         })
         assert response.status_code == 422
 
-    @pytest.mark.asyncio
-    async def test_simulate_missing_required_field(self, client: AsyncClient):
+    def test_simulate_missing_required_field(self, client: TestClient):
         """Missing required field should return 422."""
-        # p is required and has no default - should fail without it
-        response = await client.post(
+        response = client.post(  # No await
             "/api/simulate",
             json={
                 "N": 50,
