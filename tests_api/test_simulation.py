@@ -18,7 +18,7 @@ class TestSimulationEndpoint:
             "p", "N", "num_trials",
             "percolation_probability",
             "num_percolating",
-            "mean_num_clusters",
+            "mean_num_clusters", 
             "mean_cluster_size",
             "mean_spanning_size",
             "algorithm_used",

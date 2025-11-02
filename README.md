@@ -13,14 +13,16 @@ This simulator lets you explore this fascinating phenomenon with fast, efficient
 
 ## Features
 
-- Multiple search algorithms: BFS, Union-Find (Python, Numba JIT, C++)
-- High performance: C++ implementation 17x faster than baseline Python
-- Critical point estimation with error analysis
-- REST API for remote simulations
-- Cluster visualization with color-coded PNG output
-- Comprehensive cluster statistics and phase transition detection
-- Well-tested: >95% code coverage
-- Docker ready with full C++ optimization
+- **Interactive React Frontend**: Modern web UI for exploring percolation simulations
+- **Multiple search algorithms**: BFS, Union-Find (Python, Numba JIT, C++)
+- **High performance**: C++ implementation 17x faster than baseline Python
+- **Critical point estimation** with error analysis
+- **REST API** for remote simulations
+- **Real-time visualizations**: Grid views and phase transition plots
+- **Cluster visualization** with color-coded PNG output
+- **Comprehensive statistics** and phase transition detection
+- **Well-tested**: >95% code coverage
+- **Docker ready** with full C++ optimization
 
 ## Performance
 
@@ -34,10 +36,28 @@ Benchmark results for 50×50 grids (200 trials, p=0.6):
 
 ## Quick Start
 
-### Docker (Recommended)
+### Docker with Frontend (Recommended)
 
 ```bash
-# Start the API service
+# Start both backend API and frontend
+docker-compose up --build
+
+# Access the interactive web UI at http://localhost:3000
+# Backend API runs at http://localhost:8000
+# API docs available at http://localhost:8000/docs
+```
+
+The React frontend provides an intuitive interface to:
+- Adjust simulation parameters with interactive sliders
+- Run percolation simulations and view real-time results
+- Generate and download cluster visualizations
+- Analyze phase transitions with interactive plots
+- Compare algorithm performance (BFS, Numba, C++)
+
+### API Only (Docker)
+
+```bash
+# Start just the API service
 docker-compose up -d
 
 # Check health
@@ -53,12 +73,11 @@ curl -X POST http://localhost:8000/api/visualize/grid \
   -H "Content-Type: application/json" \
   -d '{"p": 0.6, "N": 100, "algorithm": "cpp"}' \
   --output percolation.png
-
-# View interactive API docs at http://localhost:8000/docs
 ```
 
 ### Local Installation
 
+**Backend:**
 ```bash
 # Clone repository
 git clone https://github.com/tls54/percolation-theory.git
@@ -75,6 +94,20 @@ pytest
 
 # Start API server
 uvicorn api.main:app --reload
+```
+
+**Frontend:**
+```bash
+# In a new terminal, navigate to frontend
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Frontend will be available at http://localhost:3000
 ```
 
 ## Usage Examples
@@ -108,14 +141,36 @@ result = response.json()
 print(f"Percolation probability: {result['percolation_probability']:.3f}")
 ```
 
+## React Frontend
+
+The interactive web interface provides a user-friendly way to explore percolation simulations without writing code.
+
+**Key Features:**
+- **Parameter Controls**: Interactive sliders and inputs for occupation probability (p), grid size (N), number of trials, and algorithm selection
+- **Real-time Results**: View percolation probability, cluster statistics, and computation time instantly
+- **Grid Visualization**: Generate and download color-coded PNG images showing cluster formations
+- **Phase Transition Analysis**: Run parameter sweeps to visualize the phase transition and estimate the critical point (p_c)
+- **Algorithm Comparison**: Compare performance between BFS, Numba, and C++ implementations
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+
+**Technology Stack:**
+- React 18 with TypeScript for type safety
+- Vite for fast development and optimized builds
+- Tailwind CSS for modern, responsive styling
+- Recharts for interactive phase transition plots
+- Lucide React for clean, consistent icons
+
+See [frontend/README.md](frontend/README.md) for detailed setup and development instructions.
+
 ## Documentation
 
+- **[Frontend Guide](frontend/README.md)** - React app setup, features, and development
+- **[API Reference](api/README.md)** - REST API endpoints and examples
 - **[Usage Guide](docs/usage.md)** - Full walkthrough from setup to visualization
 - **[Development Guide](docs/development.md)** - Local dev setup, testing, and profiling
 - **[Algorithm Details](docs/algorithms.md)** - Deep dive into percolation models and implementation
 - **[Theory Background](docs/theory.md)** - Percolation theory and critical probability
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
-- **[API Reference](api/README.md)** - REST API endpoints and examples
 - **[Algorithm Implementation](Search/README.md)** - BFS, Union-Find, and C++ backend
 - **[Visualization](visualization/README.md)** - Rendering options and parameters
 
@@ -123,26 +178,34 @@ print(f"Percolation probability: {result['percolation_probability']:.3f}")
 
 ```
 percolation-theory/
-├── Search/              # Cluster-finding algorithms (BFS, Union-Find, C++)
-├── api/                 # FastAPI backend
-├── visualization/       # Rendering and color assignment
+├── frontend/           # React web interface (TypeScript + Tailwind CSS)
+│   ├── src/
+│   │   ├── components/  # React components (controls, visualizations)
+│   │   ├── services/    # API client
+│   │   └── types/       # TypeScript definitions
+│   └── package.json
+├── Search/             # Cluster-finding algorithms (BFS, Union-Find, C++)
+├── api/                # FastAPI backend
+├── visualization/      # Rendering and color assignment
 ├── tests/              # Algorithm tests
 ├── tests_api/          # API integration tests
 ├── cpp/                # C++ source code
 ├── docs/               # Detailed documentation
 ├── Percolation.py      # Core simulation logic
 ├── Estimation.py       # Critical probability estimation
-└── requirements.txt    # Dependencies
+├── docker-compose.yml  # Docker orchestration
+└── requirements.txt    # Python dependencies
 ```
 
 ## Contributing
 
 Contributions welcome! Areas of interest:
 - Additional lattice types (triangular, hexagonal)
-- Visualization improvements
+- Frontend UI/UX improvements
+- Visualization enhancements
 - Performance optimizations
-- Documentation enhancements
-- Frontend development
+- Documentation improvements
+- Mobile responsiveness
 
 See [Development Guide](docs/development.md) for setup instructions.
 
