@@ -38,7 +38,7 @@ class ClusterColorAssigner:
         self.small = []
         
         for cluster in self.cluster_info:
-            # Check if spanning (touches top and bottom, or left and right)
+            # Check if spanning (touches top and bottom)
             if self._is_spanning(cluster['id']):
                 self.spanning.append(cluster)
             elif cluster['size'] >= self.min_cluster_size:
@@ -50,17 +50,13 @@ class ClusterColorAssigner:
         self.large.sort(key=lambda c: c['size'], reverse=True)
     
     def _is_spanning(self, cluster_id: int) -> bool:
-        """Check if cluster spans top-to-bottom or left-to-right."""
+        """Check if cluster spans top-to-bottom."""
         mask = (self.labels == cluster_id)
-        
+
         # Vertical spanning (top to bottom)
         if mask[0, :].any() and mask[-1, :].any():
             return True
-        
-        # Horizontal spanning (left to right)
-        if mask[:, 0].any() and mask[:, -1].any():
-            return True
-        
+
         return False
     
     def get_color_map(self, colormap_name: str = 'tab20') -> Dict[int, str]:
