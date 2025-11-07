@@ -64,13 +64,10 @@ def render_cluster_grid(
     # Remove ticks
     ax.set_xticks([])
     ax.set_yticks([])
-    
-    # Title
-    if title is None:
-        spanning_text = f"{stats['spanning_clusters']} spanning" if stats['spanning_clusters'] > 0 else "No spanning"
-        title = f"Percolation at p={p:.3f} (N={N}, {stats['colored_clusters']}/{stats['total_clusters']} clusters colored, {spanning_text})"
-    
-    ax.set_title(title, fontsize=12, pad=10)
+
+    # Only show title if explicitly provided (default: no title - stats shown in UI)
+    if title:
+        ax.set_title(title, fontsize=12, pad=10)
 
     # Save to bytes
     buf = io.BytesIO()

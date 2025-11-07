@@ -139,32 +139,44 @@ export default function PhaseTransitionPlot({ N, numTrials, algorithm }: PhaseTr
         ) : chartData.length > 0 ? (
           <div>
             <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 30 }}>
+              <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="p"
-                  label={{ value: 'Occupation Probability (p)', position: 'bottom', offset: 0 }}
                   domain={[pMin, pMax]}
                   type="number"
-                  tickFormatter={(value) => value.toFixed(2)}
+                  tickFormatter={(value) => value.toFixed(3)}
+                  label={{
+                    value: 'Occupation Probability (p)',
+                    position: 'insideBottom',
+                    offset: -10
+                  }}
                 />
                 <YAxis
-                  label={{ value: 'Percolation Probability P(p)', angle: -90, position: 'insideLeft' }}
+                  label={{
+                    value: 'Percolation Probability P(p)',
+                    angle: -90,
+                    position: 'insideLeft',
+                    style: { textAnchor: 'middle' }
+                  }}
                   domain={[0, 1]}
                   tickFormatter={(value) => value.toFixed(1)}
                 />
                 <Tooltip
-                  formatter={(value: number) => value.toFixed(3)}
-                  labelFormatter={(value) => `p = ${Number(value).toFixed(3)}`}
+                  formatter={(value: number) => value.toFixed(4)}
+                  labelFormatter={(value) => `p = ${Number(value).toFixed(4)}`}
                 />
-                <Legend />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
+                />
                 <Line
                   type="monotone"
                   dataKey="probability"
                   stroke="#3B82F6"
                   strokeWidth={2}
                   dot={false}
-                  name="P(p)"
+                  name="Percolation Probability"
                 />
                 {sweepData?.pc_estimate && (
                   <ReferenceLine
@@ -172,10 +184,10 @@ export default function PhaseTransitionPlot({ N, numTrials, algorithm }: PhaseTr
                     stroke="#EF4444"
                     strokeDasharray="5 5"
                     label={{
-                      value: `p_c ≈ ${sweepData.pc_estimate.toFixed(3)} ± ${(sweepData.pc_stderr || 0).toFixed(3)}`,
+                      value: `p_c ≈ ${sweepData.pc_estimate.toFixed(4)} ± ${(sweepData.pc_stderr || 0).toFixed(4)}`,
                       position: 'top',
                       fill: '#EF4444',
-                      fontSize: 12,
+                      fontSize: 14,
                     }}
                   />
                 )}
@@ -189,7 +201,7 @@ export default function PhaseTransitionPlot({ N, numTrials, algorithm }: PhaseTr
                   <p>
                     <span className="text-gray-700">p_c = </span>
                     <span className="font-semibold text-red-900">
-                      {sweepData.pc_estimate.toFixed(3)} ± {(sweepData.pc_stderr || 0).toFixed(3)}
+                      {sweepData.pc_estimate.toFixed(4)} ± {(sweepData.pc_stderr || 0).toFixed(4)}
                     </span>
                   </p>
                   {sweepData.pc_error_percent !== undefined && (

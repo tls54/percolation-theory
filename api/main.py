@@ -18,6 +18,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Visualization-Stats", "X-Grid-Size", "X-Occupation-Probability", "X-Algorithm"],
 )
 
 # Include routers

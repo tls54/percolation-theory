@@ -4,16 +4,48 @@ import type { SimulationParams, Algorithm } from '../types';
 import AlgorithmSelector from './AlgorithmSelector';
 
 interface ParameterControlsProps {
+  initialParams: SimulationParams;
+  onParamsChange: (params: SimulationParams) => void;
   onSimulate: (params: SimulationParams) => void;
   isLoading: boolean;
   cppAvailable: boolean;
 }
 
-export default function ParameterControls({ onSimulate, isLoading, cppAvailable }: ParameterControlsProps) {
-  const [p, setP] = useState(0.593);
-  const [N, setN] = useState(50);
-  const [numTrials, setNumTrials] = useState(100);
-  const [algorithm, setAlgorithm] = useState<Algorithm>('cpp');
+export default function ParameterControls({
+  initialParams,
+  onParamsChange,
+  onSimulate,
+  isLoading,
+  cppAvailable
+}: ParameterControlsProps) {
+  const [p, setP] = useState(initialParams.p);
+  const [N, setN] = useState(initialParams.N);
+  const [numTrials, setNumTrials] = useState(initialParams.num_trials);
+  const [algorithm, setAlgorithm] = useState<Algorithm>(initialParams.algorithm);
+
+  const updateParams = (newP: number, newN: number, newNumTrials: number, newAlgorithm: Algorithm) => {
+    onParamsChange({ p: newP, N: newN, num_trials: newNumTrials, algorithm: newAlgorithm });
+  };
+
+  const handlePChange = (newP: number) => {
+    setP(newP);
+    updateParams(newP, N, numTrials, algorithm);
+  };
+
+  const handleNChange = (newN: number) => {
+    setN(newN);
+    updateParams(p, newN, numTrials, algorithm);
+  };
+
+  const handleNumTrialsChange = (newNumTrials: number) => {
+    setNumTrials(newNumTrials);
+    updateParams(p, N, newNumTrials, algorithm);
+  };
+
+  const handleAlgorithmChange = (newAlgorithm: Algorithm) => {
+    setAlgorithm(newAlgorithm);
+    updateParams(p, N, numTrials, newAlgorithm);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,15 +63,15 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
             <label className="block text-sm font-medium text-gray-700">
               Occupation Probability (p)
             </label>
-            <span className="text-sm font-semibold text-blue-600">{p.toFixed(3)}</span>
+            <span className="text-sm font-semibold text-blue-600">{p.toFixed(4)}</span>
           </div>
           <input
             type="range"
             min="0"
             max="1"
-            step="0.01"
+            step="0.001"
             value={p}
-            onChange={(e) => setP(parseFloat(e.target.value))}
+            onChange={(e) => handlePChange(parseFloat(e.target.value))}
             disabled={isLoading}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50"
           />
@@ -51,12 +83,15 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
             type="number"
             min="0"
             max="1"
-            step="0.01"
+            step="0.0001"
             value={p}
-            onChange={(e) => setP(parseFloat(e.target.value))}
+            onChange={(e) => handlePChange(parseFloat(e.target.value))}
             disabled={isLoading}
             className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           />
+          <div className="text-xs text-gray-500 mt-1">
+            Supports up to 4 decimal places for precise control
+          </div>
         </div>
 
         {/* Grid Size (N) */}
@@ -78,24 +113,24 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
           <input
             type="range"
             min="10"
-            max="200"
+            max="500"
             step="10"
             value={N}
-            onChange={(e) => setN(parseInt(e.target.value))}
+            onChange={(e) => handleNChange(parseInt(e.target.value))}
             disabled={isLoading}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>10</span>
-            <span>200</span>
+            <span>500</span>
           </div>
           <input
             type="number"
             min="10"
-            max="200"
+            max="500"
             step="10"
             value={N}
-            onChange={(e) => setN(parseInt(e.target.value))}
+            onChange={(e) => handleNChange(parseInt(e.target.value))}
             disabled={isLoading}
             className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           />
@@ -115,7 +150,7 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
             max="500"
             step="10"
             value={numTrials}
-            onChange={(e) => setNumTrials(parseInt(e.target.value))}
+            onChange={(e) => handleNumTrialsChange(parseInt(e.target.value))}
             disabled={isLoading}
             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50"
           />
@@ -129,7 +164,7 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
             max="500"
             step="10"
             value={numTrials}
-            onChange={(e) => setNumTrials(parseInt(e.target.value))}
+            onChange={(e) => handleNumTrialsChange(parseInt(e.target.value))}
             disabled={isLoading}
             className="mt-2 w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           />
@@ -138,7 +173,7 @@ export default function ParameterControls({ onSimulate, isLoading, cppAvailable 
         {/* Algorithm Selector */}
         <AlgorithmSelector
           selected={algorithm}
-          onChange={setAlgorithm}
+          onChange={handleAlgorithmChange}
           cppAvailable={cppAvailable}
         />
 

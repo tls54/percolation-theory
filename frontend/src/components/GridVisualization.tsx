@@ -36,6 +36,7 @@ export default function GridVisualization({ params, autoRefresh = false }: GridV
           }
           oldImageUrl = result.imageUrl;
 
+          console.log('Visualization stats received:', result.stats);
           setImageUrl(result.imageUrl);
           setStats(result.stats);
         }
@@ -77,6 +78,7 @@ export default function GridVisualization({ params, autoRefresh = false }: GridV
           URL.revokeObjectURL(imageUrl);
         }
 
+        console.log('Visualization stats received:', result.stats);
         setImageUrl(result.imageUrl);
         setStats(result.stats);
       })
@@ -149,31 +151,57 @@ export default function GridVisualization({ params, autoRefresh = false }: GridV
 
       {stats && (
         <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Visualization Statistics</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <h4 className="font-semibold text-gray-900 mb-3">Visualization Statistics</h4>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            {/* Grid Parameters */}
+            <div className="col-span-2 pb-2 border-b border-gray-200">
+              <span className="text-gray-600">Grid:</span>
+              <span className="ml-2 font-semibold text-gray-900">
+                {params.N} × {params.N}
+              </span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-gray-600">Occupation Probability:</span>
+              <span className="ml-2 font-semibold text-gray-900">p = {params.p.toFixed(4)}</span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-gray-600">Algorithm:</span>
+              <span className="ml-2 font-semibold text-gray-900">{params.algorithm.toUpperCase()}</span>
+            </div>
+
+            {/* Cluster Statistics */}
+            <div className="col-span-2 pt-2 border-t border-gray-200">
+              <span className="text-gray-600 font-medium">Cluster Analysis</span>
+            </div>
             <div>
               <span className="text-gray-600">Total Clusters:</span>
-              <span className="ml-2 font-semibold text-gray-900">{stats.total_clusters}</span>
+              <span className="ml-2 font-semibold text-gray-900">{stats.total_clusters ?? 0}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">Colored Clusters:</span>
+              <span className="ml-2 font-semibold text-gray-900">{stats.colored_clusters ?? 0}</span>
             </div>
             <div>
               <span className="text-gray-600">Spanning Clusters:</span>
               <span
                 className={`ml-2 font-semibold ${
-                  stats.spanning_clusters > 0 ? 'text-green-600' : 'text-gray-900'
+                  (stats.spanning_clusters ?? 0) > 0 ? 'text-green-600' : 'text-gray-900'
                 }`}
               >
-                {stats.spanning_clusters}
+                {stats.spanning_clusters ?? 0}
               </span>
             </div>
-            <div className="col-span-2">
-              <span className="text-gray-600">Grid:</span>
-              <span className="ml-2 font-semibold text-gray-900">
-                {params.N} × {params.N} (p = {params.p.toFixed(3)})
-              </span>
+            <div>
+              <span className="text-gray-600">Large Clusters:</span>
+              <span className="ml-2 font-semibold text-gray-900">{stats.large_clusters ?? 0}</span>
             </div>
-            <div className="col-span-2">
-              <span className="text-gray-600">Algorithm:</span>
-              <span className="ml-2 font-semibold text-gray-900">{params.algorithm}</span>
+            <div>
+              <span className="text-gray-600">Small Clusters:</span>
+              <span className="ml-2 font-semibold text-gray-900">{stats.small_clusters ?? 0}</span>
+            </div>
+            <div>
+              <span className="text-gray-600">Min Size Threshold:</span>
+              <span className="ml-2 font-semibold text-gray-900">{stats.min_size_threshold ?? 0}</span>
             </div>
           </div>
         </div>

@@ -29,10 +29,10 @@ def get_algorithm(name: str):
 async def visualize_grid(request: VisualizationRequest):
     """
     Generate visualization of a single percolation grid.
-    
+
     Returns PNG image with cluster visualization.
     Visualization statistics returned in X-Visualization-Stats header.
-    
+
     Example:
 ```
         curl -X POST http://localhost:8000/api/visualize/grid \\

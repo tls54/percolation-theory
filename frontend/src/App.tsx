@@ -37,6 +37,10 @@ function App() {
       });
   }, []);
 
+  const handleParamsChange = (newParams: SimulationParams) => {
+    setParams(newParams);
+  };
+
   const handleSimulate = async (newParams: SimulationParams) => {
     console.log('Starting simulation with params:', newParams);
     setLoading(true);
@@ -84,6 +88,8 @@ function App() {
           {/* Left Column - Controls and Results */}
           <div className="lg:col-span-2 space-y-6">
             <ParameterControls
+              initialParams={params}
+              onParamsChange={handleParamsChange}
               onSimulate={handleSimulate}
               isLoading={loading}
               cppAvailable={cppAvailable}

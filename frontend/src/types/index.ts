@@ -57,7 +57,10 @@ export interface VisualizationParams {
 export interface VisualizationStats {
   total_clusters: number;
   spanning_clusters: number;
-  [key: string]: any;
+  large_clusters?: number;
+  small_clusters?: number;
+  colored_clusters?: number;
+  min_size_threshold?: number;
 }
 
 export interface HealthResponse {
